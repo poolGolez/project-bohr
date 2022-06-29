@@ -1,40 +1,24 @@
-import boto3
 import json
-from datetime import datetime
-from request import RequestMenuMapper
+from marshaller import marshal_menu
+from repository import MenuRepository
+from request import MenuMapper
 
 
-dynamodb = boto3.resource("dynamodb")
-menu_table = dynamodb.Table("bohr-menu")
-request_mapper = RequestMenuMapper()
+request_mapper = MenuMapper()
+repository = MenuRepository()
 
 
 def handler(event, context):
-    merchant_id = event["pathParameters"]["merchantId"]
-    request_body = json.loads(event['body'])
+    request_body = dict(json.loads(event['body']))
+    request_body["merchant_id"] = event["pathParameters"]["merchantId"]
 
-    menu = request_mapper.map(event)
-    # content = request_body["items"]
-    now = datetime.now()
-
-    menu_table.put_item(
-        Item={
-            "pk": f"MECHANT#{menu.merchant_id}",
-            "merchant_id": menu.merchant_id,
-            "name": menu.name,
-            # "content": content,
-            "status": "ACTIVE",
-            "date_created": now.strftime("%Y-%m-%d %H:%M:%S")
-        }
-    )
+    menu = request_mapper.map(request_body)
+    repository.save(menu)
 
     return {
-        "statusCode": "200",
+        "statusCode": "201",
         "headers": {
             "Content-type": "application/json"
         },
-        "body": json.dumps({
-            "merchantId": merchant_id,
-            # "content": content
-        })
+        "body": json.dumps(marshal_menu(menu))
     }
