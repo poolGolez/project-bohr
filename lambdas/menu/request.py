@@ -1,29 +1,24 @@
-import json
-from domain import Menu, Product
+from domain import Menu, MenuItem
 
 
-class RequestMenuMapper:
+class MenuMapper:
 
-    def map(self, event):
-        merchant_id = event["pathParameters"]["merchantId"]
-
-        request_body = json.loads(event["body"])
-        name = request_body["name"]
+    def map(self, request_body):
         menu = Menu(
-            merchantId=merchant_id,
-            name=name
+            merchantId=request_body["merchant_id"],
+            name=request_body["merchant_id"]
         )
 
         content = request_body["items"]
-        self.add_products(menu, content)
+        self._add_items(menu, content)
 
         return menu
 
-    def add_products(self, menu, items):
+    def _add_items(self, menu:Menu, items):
         for item_json in items:
-            product = Product(
+            menu_item = MenuItem(
                 description=item_json["description"],
                 price= item_json["price"],
-                category= item_json["category"]
+                category=item_json["category"]
             )
-            menu.add_product(product)
+            menu.add_menu_item(menu_item)
