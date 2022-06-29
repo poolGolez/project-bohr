@@ -11,6 +11,7 @@ class MenuRepository:
     def save(self, menu: Menu):
         db_item = serialize_menu(menu)
         db_item["pk"] = f"MERCHANT#{menu.merchant_id}"
+        db_item["sk"] = f"MENU#{menu.id}"
 
         self._table.put_item(
             Item=db_item
@@ -19,6 +20,7 @@ class MenuRepository:
 
 def serialize_menu(menu: Menu):
     return {
+        "id": menu.id,
         "merchant_id": menu.merchant_id,
         "name": menu.name,
         "items": [serialize_menu_item(menuItem) for menuItem in menu.items],
