@@ -27,6 +27,19 @@ Resources:
           Properties:
             Path: /api/v1/merchant/{merchantId}/menu
             Method: post
+  ListMenuFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/menu
+      Handler: list.handler
+      Architectures:
+        - x86_64
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /api/v1/merchant/{merchantId}/menu
+            Method: get
   MenuTable:
     Type: AWS::DynamoDB::Table
     Properties:
