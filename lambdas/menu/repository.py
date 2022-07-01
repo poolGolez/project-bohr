@@ -8,6 +8,18 @@ class MenuRepository:
         self._dynamodb = boto3.resource("dynamodb")
         self._table = self._dynamodb.Table("bohr-menu")
 
+    def find_all_by_merchant_id(self, merchant_id):
+        results = self._table.query(
+            KeyConditionExpression="#pk = :pk",
+            ExpressionAttributeNames={
+                "#pk": "pk"
+            },
+            ExpressionAttributeValues={
+                ":pk": f"MERCHANT#{merchant_id}"
+            }
+        )
+        return results
+
     def save(self, menu: Menu):
         db_item = serialize_menu(menu)
         db_item["pk"] = f"MERCHANT#{menu.merchant_id}"
