@@ -1,31 +1,44 @@
 import boto3
 from domain import Menu, MenuItem
 
+DB_TABLE_NAME = "bohr-menu"
+
 
 class MenuRepository:
 
     def __init__(self):
         self._dynamodb = boto3.resource("dynamodb")
-        self._table = self._dynamodb.Table("bohr-menu")
+        self._table = self._dynamodb.Table(DB_TABLE_NAME)
 
     def save(self, menu: Menu):
-        db_item = serialize_menu(menu)
-        db_item["pk"] = f"MERCHANT#{menu.merchant_id}"
-        db_item["sk"] = f"MENU#{menu.id}"
-
+        menu_metadata_db_item = serialize_menu_metadata(menu)
         self._table.put_item(
-            Item=db_item
+            Item=menu_metadata_db_item
+        )
+
+        menu_content_db_item = serialize_menu_content(menu)
+        self._table.put_item(
+            Item=menu_content_db_item
         )
 
 
-def serialize_menu(menu: Menu):
+def serialize_menu_metadata(menu: Menu):
     return {
+        "pk": f"MERCHANT#{menu.merchant_id}",
+        "sk": f"MENU#{menu.id}",
         "id": menu.id,
         "merchant_id": menu.merchant_id,
         "name": menu.name,
-        "items": [serialize_menu_item(menuItem) for menuItem in menu.items],
         "status": menu.status,
         "date_created": menu.date_created
+    }
+
+
+def serialize_menu_content(menu: Menu):
+    return {
+        "pk": f"MENU#{menu.id}",
+        "sk": f"MENU#{menu.id}",
+        "content": [serialize_menu_item(item) for item in menu.items]
     }
 
 
