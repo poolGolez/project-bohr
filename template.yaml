@@ -35,7 +35,7 @@ Resources:
       Architectures:
         - arm64
       Policies:
-        - DynamoDBWritePolicy:
+        - DynamoDBReadPolicy:
             TableName: !Select [1, !Split ["/", !GetAtt MenuTable.Arn]]
       Events:
         Api:
