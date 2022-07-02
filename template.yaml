@@ -17,7 +17,7 @@ Resources:
       CodeUri: lambdas/menu
       Handler: create.handler
       Architectures:
-        - x86_64
+        - arm64
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Select [1, !Split ["/", !GetAtt MenuTable.Arn]]
@@ -33,7 +33,10 @@ Resources:
       CodeUri: lambdas/menu
       Handler: list.handler
       Architectures:
-        - x86_64
+        - arm64
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Select [1, !Split ["/", !GetAtt MenuTable.Arn]]
       Events:
         Api:
           Type: Api
