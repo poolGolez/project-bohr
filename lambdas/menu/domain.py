@@ -15,12 +15,12 @@ class Menu:
 
     def __init__(self, **kwargs):
         self.id = str(uuid4())[-6:]
-        self.merchant_id = kwargs["merchantId"]
+        self.merchant_id = kwargs["merchant_id"]
         self.name = kwargs["name"]
         self.items = []
         self.categories = []
         self.status = "ACTIVE"
-        self.date_created = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.date_created = datetime.now()
 
     def add_menu_item(self, menu_item: MenuItem):
         self.items.append(menu_item)

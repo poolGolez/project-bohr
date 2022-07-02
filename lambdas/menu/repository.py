@@ -20,7 +20,7 @@ class MenuRepository:
                 ":pk": f"MERCHANT#{merchant_id}"
             }
         )
-        return results
+        return [deserialize_menu_metadata(item) for item in results["Items"]]
 
     def save(self, menu: Menu):
         menu_metadata_db_item = serialize_menu_metadata(menu)
@@ -42,8 +42,16 @@ def serialize_menu_metadata(menu: Menu):
         "merchant_id": menu.merchant_id,
         "name": menu.name,
         "status": menu.status,
-        "date_created": menu.date_created
+        "date_created": menu.date_created.strftime("%Y-%m-%d %H:%M:%S")
     }
+
+
+def deserialize_menu_metadata(item):
+    return Menu(
+        merchant_id=item["merchant_id"],
+        name=item["name"],
+        status=item["status"]
+    )
 
 
 def serialize_menu_content(menu: Menu):

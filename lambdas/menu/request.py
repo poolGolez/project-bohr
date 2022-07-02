@@ -6,8 +6,8 @@ class MenuMapper:
 
     def map(self, request_body):
         menu = Menu(
-            merchantId=request_body["merchant_id"],
-            name=request_body["merchant_id"]
+            merchant_id=request_body["merchant_id"],
+            name=request_body["name"]
         )
 
         content = request_body["items"]
