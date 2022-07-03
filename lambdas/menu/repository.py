@@ -1,4 +1,7 @@
+from datetime import datetime
+from time import strptime
 import boto3
+from uuid import uuid4
 from domain import Menu, MenuItem
 
 DB_TABLE_NAME = "bohr-menu"
@@ -22,7 +25,36 @@ class MenuRepository:
         )
         return [deserialize_menu_metadata(item) for item in results["Items"]]
 
+    def find_by_merchant_and_menu(self, merchant_id, menu_id):
+        results = self._dynamodb.batch_get_item(
+            RequestItems={
+                DB_TABLE_NAME: {
+                    "Keys": [
+                        {
+                            "pk": f"MERCHANT#{merchant_id}",
+                            "sk": f"MENU#{menu_id}"
+                        },
+                        {
+                            "pk": f"MENU#{menu_id}",
+                            "sk": f"MENU#{menu_id}"
+                        }
+                    ]
+                }
+            }
+        )
+
+        metadata = [item for item in results["Responses"][DB_TABLE_NAME]
+                    if item["pk"] == f"MERCHANT#{merchant_id}"][0]
+        content = [item for item in results["Responses"][DB_TABLE_NAME]
+                   if item["pk"] == f"MENU#{menu_id}"][0]["content"]
+
+        return deserialize_menu(metadata, content)
+
     def save(self, menu: Menu):
+        menu.id = str(uuid4())[-6:]
+        menu.status = "ACTIVE"
+        menu.date_created = datetime.now()
+
         menu_metadata_db_item = serialize_menu_metadata(menu)
         self._table.put_item(
             Item=menu_metadata_db_item
@@ -46,11 +78,14 @@ def serialize_menu_metadata(menu: Menu):
     }
 
 
-def deserialize_menu_metadata(item):
+def deserialize_menu_metadata(metadata):
     return Menu(
-        merchant_id=item["merchant_id"],
-        name=item["name"],
-        status=item["status"]
+        id=metadata["id"],
+        merchant_id=metadata["merchant_id"],
+        name=metadata["name"],
+        status=metadata["status"],
+        date_created=datetime.strptime(
+            metadata["date_created"], "%Y-%m-%d %H:%M:%S")
     )
 
 
@@ -68,3 +103,18 @@ def serialize_menu_item(menuItem: MenuItem):
         "category": menuItem.category,
         "price": menuItem.price
     }
+
+
+def deserialize_menu(metadata, items=[]):
+    menu = deserialize_menu_metadata(metadata)
+    menu.items = [deserialize_menu_item(item) for item in items]
+
+    return menu
+
+
+def deserialize_menu_item(item):
+    return MenuItem(
+        description=item["description"],
+        price=item["price"],
+        category=item["category"]
+    )

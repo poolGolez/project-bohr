@@ -1,6 +1,5 @@
 from decimal import Decimal
 from datetime import datetime
-from uuid import uuid4
 
 
 class MenuItem:
@@ -14,13 +13,12 @@ class MenuItem:
 class Menu:
 
     def __init__(self, **kwargs):
-        self.id = str(uuid4())[-6:]
-        self.merchant_id = kwargs["merchant_id"]
-        self.name = kwargs["name"]
-        self.items = []
-        self.categories = []
-        self.status = "ACTIVE"
-        self.date_created = datetime.now()
+        self.id = kwargs.get("id", None)
+        self.merchant_id = kwargs.get("merchant_id", None)
+        self.name = kwargs.get("name", None)
+        self.items = kwargs.get("items", [])
+        self.status = kwargs.get("status", None)
+        self.date_created = kwargs.get("date_created", None)
 
     def add_menu_item(self, menu_item: MenuItem):
         self.items.append(menu_item)
