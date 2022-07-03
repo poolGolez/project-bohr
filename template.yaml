@@ -15,7 +15,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/menu
-      Handler: create.handler
+      Handler: api.create
       Architectures:
         - x86_64
       Policies:
@@ -31,7 +31,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambdas/menu
-      Handler: list.handler
+      Handler: api.list
       Architectures:
         - x86_64
       Policies:
