@@ -1,7 +1,5 @@
 from datetime import datetime
-from time import strptime
 import boto3
-from uuid import uuid4
 from domain import Menu, MenuItem
 
 DB_TABLE_NAME = "bohr-menu"
@@ -51,10 +49,6 @@ class MenuRepository:
         return deserialize_menu(metadata, content)
 
     def save(self, menu: Menu):
-        menu.id = str(uuid4())[-6:]
-        menu.status = "ACTIVE"
-        menu.date_created = datetime.now()
-
         menu_metadata_db_item = serialize_menu_metadata(menu)
         self._table.put_item(
             Item=menu_metadata_db_item

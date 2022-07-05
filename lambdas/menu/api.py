@@ -3,6 +3,8 @@ from re import I
 from marshaller import marshal_menu, marshal_menu_metadata
 from repository import MenuRepository
 from request import MenuMapper, http_response_ok
+from uuid import uuid4
+from datetime import datetime
 
 
 request_mapper = MenuMapper()
@@ -15,6 +17,9 @@ def create(event, context):
     request_body["merchant_id"] = event["pathParameters"]["merchantId"]
 
     menu = request_mapper.map(request_body)
+    menu.id = str(uuid4())[-6:]
+    menu.status = "ACTIVE"
+    menu.date_created = datetime.now()
     repository.save(menu)
 
     return marshal_menu(menu)
