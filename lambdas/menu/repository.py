@@ -59,6 +59,11 @@ class MenuRepository:
             Item=menu_content_db_item
         )
 
+    def batch_save_metadata(self, menus: list):
+        with self._table.batch_writer() as batch:
+            for menu in menus:
+                batch.put_item(Item=serialize_menu_metadata(menu))
+
 
 def serialize_menu_metadata(menu: Menu):
     return {

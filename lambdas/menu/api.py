@@ -43,3 +43,24 @@ def get(event, context):
         return None
 
     return marshal_menu(menu)
+
+
+@http_response_ok
+def activate(event, context):
+    merchant_id = event["pathParameters"]["merchantId"]
+    menu_id = event["pathParameters"]["menuId"]
+
+    # check if menu is there
+    menus = repository.find_all_by_merchant_id(merchant_id)
+    for menu in menus:
+        if menu.id == menu_id:
+            menu.activate()
+        else:
+            menu.deactivate()
+
+    repository.batch_save_metadata(menus)
+
+    return {
+        "merchant_id": merchant_id,
+        "menu_id": menu_id
+    }
