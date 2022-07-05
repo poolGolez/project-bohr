@@ -18,7 +18,7 @@ def create(event, context):
 
     menu = request_mapper.map(request_body)
     menu.id = str(uuid4())[-6:]
-    menu.status = "ACTIVE"
+    menu.status = "INACTIVE"
     menu.date_created = datetime.now()
     repository.save(menu)
 
