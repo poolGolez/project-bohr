@@ -59,6 +59,22 @@ Resources:
           Properties:
             Path: /api/v1/merchant/{merchantId}/menu/{menuId}
             Method: get
+  ActivateMenuFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambdas/menu
+      Handler: api.activate
+      Architectures:
+        - x86_64
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Select [1, !Split ["/", !GetAtt MenuTable.Arn]]
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /api/v1/merchant/{merchantId}/menu/{menuId}/activate
+            Method: post
   MenuTable:
     Type: AWS::DynamoDB::Table
     Properties:
