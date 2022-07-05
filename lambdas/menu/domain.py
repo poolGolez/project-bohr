@@ -22,3 +22,9 @@ class Menu:
 
     def add_menu_item(self, menu_item: MenuItem):
         self.items.append(menu_item)
+
+    def activate(self):
+        self.status = "ACTIVE"
+
+    def deactivate(self):
+        self.status = "INACTIVE"
